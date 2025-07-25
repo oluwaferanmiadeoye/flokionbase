@@ -6,6 +6,11 @@
   box-sizing: border-box;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 :root {
   --primary-black: #000000;
   --primary-dark-blue: #0c1425;
@@ -779,6 +784,11 @@ body {
 .footer p {
   color: var(--medium-gray);
   margin-bottom: 0.5rem;
+}
+.footer p a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 /* Animations */
