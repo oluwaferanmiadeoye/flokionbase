@@ -1,4 +1,4 @@
- // Loading screen
+     // Loading screen
       window.addEventListener("load", () => {
         setTimeout(() => {
           document.getElementById("loading").classList.add("hidden");
@@ -7,42 +7,36 @@
 
       // Mobile menu toggle
       const mobileMenuToggle = document.getElementById("mobileMenuToggle");
-const mobileNav = document.getElementById("mobileNav");
+      const mobileNav = document.getElementById("mobileNav");
 
-mobileMenuToggle.addEventListener("click", () => {
-  mobileMenuToggle.classList.toggle("active");
-  mobileNav.classList.toggle("active");
-  
-  // Toggle body scroll
-  if (mobileNav.classList.contains("active")) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
-  }
-});
+      mobileMenuToggle.addEventListener("click", () => {
+        mobileMenuToggle.classList.toggle("active");
+        mobileNav.classList.toggle("active");
+
+        if (mobileNav.classList.contains("active")) {
+          document.body.style.overflow = "hidden";
+        } else {
+          document.body.style.overflow = "";
+        }
+      });
 
       // Close mobile menu when clicking on a link
       document.querySelectorAll(".mobile-nav-link").forEach((link) => {
         link.addEventListener("click", () => {
           mobileMenuToggle.classList.remove("active");
           mobileNav.classList.remove("active");
+          document.body.style.overflow = "";
         });
       });
 
       // Navbar scroll effect
       const navbar = document.getElementById("navbar");
-      let lastScrollY = window.scrollY;
-
       window.addEventListener("scroll", () => {
-        const currentScrollY = window.scrollY;
-
-        if (currentScrollY > 100) {
+        if (window.scrollY > 100) {
           navbar.classList.add("scrolled");
         } else {
           navbar.classList.remove("scrolled");
         }
-
-        lastScrollY = currentScrollY;
       });
 
       // Smooth scrolling for navigation links
@@ -67,7 +61,6 @@ mobileMenuToggle.addEventListener("click", () => {
         let current = "";
         sections.forEach((section) => {
           const sectionTop = section.offsetTop;
-          const sectionHeight = section.clientHeight;
           if (scrollY >= sectionTop - 200) {
             current = section.getAttribute("id");
           }
@@ -95,28 +88,48 @@ mobileMenuToggle.addEventListener("click", () => {
         });
       }, observerOptions);
 
-      // Observe all fade-in elements
       document.querySelectorAll(".fade-in").forEach((el) => {
         observer.observe(el);
       });
 
-      // Interactive hover effects for cards
-      document.querySelectorAll(".feature-card, .stat-card").forEach((card) => {
-        card.addEventListener("mouseenter", function () {
-          this.style.transform = "translateY(-15px)";
-        });
+      // Meme slider functionality
+      let currentSlide = 0;
+      const slides = document.querySelectorAll(".meme-slide");
+      const totalSlides = slides.length;
 
-        card.addEventListener("mouseleave", function () {
-          this.style.transform = "translateY(0)";
-        });
-      });
+      function showSlide(n) {
+        slides.forEach((slide) => slide.classList.remove("active"));
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add("active");
+      }
+
+      function nextSlide() {
+        showSlide(currentSlide + 1);
+      }
+
+      function previousSlide() {
+        showSlide(currentSlide - 1);
+      }
+
+      // Auto-advance slides every 5 seconds
+      setInterval(nextSlide, 5000);
+
+      // Download current meme
+      function downloadCurrentMeme() {
+        const currentImg = slides[currentSlide].querySelector("img");
+        const link = document.createElement("a");
+        link.download = `based-floki-meme-${currentSlide + 1}.jpg`;
+        link.href = currentImg.src;
+        link.click();
+      }
 
       // Button click effects
       document
-        .querySelectorAll(".btn-primary, .btn-secondary")
+        .querySelectorAll(
+          ".btn-primary, .btn-secondary, .slider-btn, .download-btn"
+        )
         .forEach((btn) => {
           btn.addEventListener("click", function (e) {
-            // Create ripple effect
             const ripple = document.createElement("span");
             const rect = this.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
@@ -136,7 +149,6 @@ mobileMenuToggle.addEventListener("click", () => {
           `;
 
             this.appendChild(ripple);
-
             setTimeout(() => ripple.remove(), 600);
           });
         });
@@ -157,77 +169,8 @@ mobileMenuToggle.addEventListener("click", () => {
       `;
       document.head.appendChild(style);
 
-      // Social link hover effects
-      document.querySelectorAll(".social-link").forEach((link) => {
-        link.addEventListener("mouseenter", function () {
-          this.style.transform = "translateY(-4px) rotate(5deg)";
-        });
-
-        link.addEventListener("mouseleave", function () {
-          this.style.transform = "translateY(0) rotate(0deg)";
-        });
-      });
-
-      // Performance optimization - debounce scroll events
-      let ticking = false;
-
-      function updateOnScroll() {
-        // Update scroll-based animations here if needed
-        ticking = false;
-      }
-
-      function requestTick() {
-        if (!ticking) {
-          requestAnimationFrame(updateOnScroll);
-          ticking = true;
-        }
-      }
-
-      // Easter egg - Konami code
-      let konamiCode = [];
-      const konami = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
-
-      document.addEventListener("keydown", (e) => {
-        konamiCode.push(e.keyCode);
-        if (konamiCode.length > konami.length) {
-          konamiCode.shift();
-        }
-
-        if (konamiCode.join(",") === konami.join(",")) {
-          // Easter egg activated - add some fun effects
-          document.body.style.animation = "rainbow 2s ease infinite";
-          setTimeout(() => {
-            document.body.style.animation = "";
-          }, 5000);
-        }
-      });
-
-      // Add rainbow animation for easter egg
-      const rainbowStyle = document.createElement("style");
-      rainbowStyle.textContent = `
-        @keyframes rainbow {
-          0% { filter: hue-rotate(0deg); }
-          100% { filter: hue-rotate(360deg); }
-        }
-      `;
-      document.head.appendChild(rainbowStyle);
-
-      // Preload critical resources for better performance
-      const preloadResources = () => {
-        // Preload important images or fonts if needed
-        const link = document.createElement("link");
-        link.rel = "preload";
-        link.as = "font";
-        link.type = "font/woff2";
-        link.crossOrigin = "anonymous";
-        document.head.appendChild(link);
-      };
-
-      preloadResources();
-
-      // Initialize all animations and effects when DOM is ready
+      // Initialize animations when DOM is ready
       document.addEventListener("DOMContentLoaded", () => {
-        // Trigger initial fade-in animations for elements in viewport
         document.querySelectorAll(".fade-in").forEach((el) => {
           const rect = el.getBoundingClientRect();
           if (rect.top < window.innerHeight && rect.bottom > 0) {
